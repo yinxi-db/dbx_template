@@ -1,0 +1,9 @@
+{
+    "environments": {
+        "default": {
+            "profile": "ml-practice-db",
+            "workspace_dir": "/Users/yinxi.zhang@databricks.com/dbx_example/dbx_sample",
+            "artifact_location": "dbfs:/Shared/dbx/projects/dbx_sample"
+        }
+    }
+}

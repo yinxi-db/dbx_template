@@ -1,0 +1,32 @@
+transformation:
+  data_source: "/databricks-datasets/wine-quality/winequality-white.csv"
+  data_output_format: "delta"
+  data_dest: "/tmp/yz/wine-quality.delta"
+  refresh_frequency:
+  notifications:
+  params:
+train:
+  data_source: "/tmp/yz/wine-quality.delta"
+  params:
+    n_estimators: 20
+    max_depth: 4
+  refresh_frequency:
+  mlflow_tracking_experiment: "/Shared/winequality_sample_mlflow_exp"
+  mlflow_registered_model_name: "winequality_sample_model"
+  model_tags:
+    version_tag:
+      "minor_version_id": 1
+      "major_version_id": 0
+    model_tag:
+      "model_type": "SKLearnRandomForest"
+  notifications:
+score:
+  data_source: "/tmp/yz/wine-quality.delta"
+  mlflow_registered_model_name: "winequality_sample_model"
+  mlflow_model_stage: "Production"
+  data_dest: "/tmp/yz/wine-quality_wpredictions.delta"
+  params:
+  refresh_frequency:
+  notification:
+monitor:
+
