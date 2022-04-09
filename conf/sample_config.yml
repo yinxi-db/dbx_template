@@ -1,5 +1,6 @@
 transformation:
-  data_source: "/databricks-datasets/wine-quality/winequality-white.csv"
+  data_source:
+    wine_data: "/databricks-datasets/wine-quality/winequality-white.csv"
   data_output_format: "delta"
   data_dest: "/tmp/yz/wine-quality.delta"
   refresh_frequency:
@@ -27,6 +28,13 @@ score:
   data_dest: "/tmp/yz/wine-quality_wpredictions.delta"
   params:
   refresh_frequency:
-  notification:
+  notifications:
 monitor:
+  params:
+    data_source: "/tmp/yz/wine-quality_wpredictions.delta"
+    mlflow_registered_model_name: "winequality_sample_model"
+  refresh_frequency:
+  alerting_thresholds:
+    row_count_deviation: 0.1
+  notifications:
 

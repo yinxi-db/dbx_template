@@ -12,7 +12,7 @@ class TransformJob(Job):
         for l in listing:
             self.logger.info(f"DBFS directory: {l}")
 
-        input_path = self.conf["transformation"]["data_source"]
+        input_path = self.conf["transformation"]["data_source"]["wine_data"]
         output_path = self.conf["transformation"]["data_dest"]
         output_format = self.conf["transformation"]["data_output_format"]
 
