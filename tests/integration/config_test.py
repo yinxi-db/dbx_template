@@ -90,10 +90,10 @@ class ConfigurationTest(unittest.TestCase):
         self.assertIsNotNone(monitor_configs["params"]["mlflow_registered_model_name"],
                              "mlflow_registered_model_name of monitor configs can't be None")
 
-        self.assertIn("alerting_threshold", monitor_configs,
-                      "alerting_threshold of monitor configs missing")
-        self.assertIsNotNone(monitor_configs["alerting_threshold"],
-                             "alerting_threshold of monitor configs can't be None")
+        self.assertIn("alerting_thresholds", monitor_configs,
+                      "alerting_thresholds of monitor configs missing")
+        self.assertIsNotNone(monitor_configs["alerting_thresholds"],
+                             "alerting_thresholds of monitor configs can't be None")
 
         self.assertIn("refresh_frequency", train_configs, "refresh_frequency of train configs missing")
         self.assertIn("notifications", train_configs, "notifications of train configs missing")
