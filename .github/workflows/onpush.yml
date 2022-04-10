@@ -61,6 +61,7 @@ jobs:
           dbx deploy --write-specs-to-file=./.dbx/deployment-result.json --files-only
 
       - name: Reflect to ADF
+        run: |
           dbx datafactory reflect \
           --specs-file=./.dbx/deployment-result.json \
           --subscription-name field-eng \
