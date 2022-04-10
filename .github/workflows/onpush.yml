@@ -42,10 +42,32 @@ jobs:
 
       - name: Deploy integration test
         run: |
-          dbx deploy --jobs=dbx-sample-sample-integration-test --files-only
+          dbx deploy --jobs=dbx-sample-integration-test --files-only
 
       - name: Run integration test
         run: |
-          dbx launch --job=dbx-sample-sample-integration-test --as-run-submit --trace
+          dbx launch --job=dbx-sample-integration-test --as-run-submit --trace
+
+      - name: Deploy config test
+        run: |
+          dbx deploy --jobs=dbx-sample-config-test --files-only
+
+      - name: Run integration test
+        run: |
+          dbx launch --job=dbx-sample-config-test --as-run-submit --trace
+
+      - name: Deploy to ADF
+        run: |
+          dbx deploy --write-specs-to-file=./.dbx/deployment-result.json --files-only
+
+      - name: Reflect to ADF
+          dbx datafactory reflect \
+          --specs-file=./.dbx/deployment-result.json \
+          --subscription-name field-eng \
+          --resource-group oneenv \
+          --factory-name oneenv-adf \
+          --name pipeline3
+
+
 
 
