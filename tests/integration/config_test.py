@@ -81,12 +81,13 @@ class ConfigurationTest(unittest.TestCase):
 
         ## inspect monitor configs
         monitor_configs = self.config["monitor"]
-        self.assertIn("data_source", monitor_configs, "data_source of monitor configs missing")
-        self.assertIsNotNone(monitor_configs["data_source"], "data_source of monitor configs can't be None")
+        self.assertIn("params", monitor_configs, "params of monitor configs missing")
+        self.assertIn("data_source", monitor_configs["params"], "data_source of monitor configs missing")
+        self.assertIsNotNone(monitor_configs["params"]["data_source"], "data_source of monitor configs can't be None")
 
-        self.assertIn("mlflow_registered_model_name", monitor_configs,
+        self.assertIn("mlflow_registered_model_name", monitor_configs["params"],
                       "mlflow_registered_model_name of monitor configs missing")
-        self.assertIsNotNone(monitor_configs["mlflow_registered_model_name"],
+        self.assertIsNotNone(monitor_configs["params"]["mlflow_registered_model_name"],
                              "mlflow_registered_model_name of monitor configs can't be None")
 
         self.assertIn("alerting_threshold", monitor_configs,
