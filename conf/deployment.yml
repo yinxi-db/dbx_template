@@ -44,3 +44,21 @@ environments:
             spark_python_task:
               python_file: "file://dbx_sample/monitor/monitor.py"
               parameters: [ "--conf-file", "file:fuse://conf/sample_config.yml" ]
+      - name: "dbx-sample-unit-test"
+        <<:
+          - *basic-static-cluster
+        spark_python_task:
+          python_file: "file://dbx_sample/jobs/sample/entrypoint.py"
+          parameters: ["--conf-file", "file:fuse://conf/test/sample.yml"]
+      - name: "dbx-sample-integration-test"
+        <<:
+          - *basic-static-cluster
+        spark_python_task:
+          python_file: "file://tests/integration/sample_test.py"
+          parameters: ["--conf-file", "file:fuse://conf/test/sample.yml"]
+      - name: "dbx-sample-config-test"
+        <<:
+          - *basic-static-cluster
+        spark_python_task:
+          python_file: "file://tests/integration/config_test.py"
+          parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
