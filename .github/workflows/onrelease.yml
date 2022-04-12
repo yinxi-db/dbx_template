@@ -51,15 +51,24 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      ## deploy to ADF
+      ## deploy to Astra ADF
+#      - name: Reflect to ADF
+#        run: |
+#          dbx datafactory reflect \
+#          --specs-file=./.dbx/deployment-result.json \
+#          --subscription-name DTCA-DEV \
+#          --resource-group astra-ddvdata-test-scu-rg \
+#          --factory-name astra-ddvdata-test-scu-adf \
+#          --name yz-test-pipeline
+      ## deploy to oneenv ADF
       - name: Reflect to ADF
         run: |
           dbx datafactory reflect \
           --specs-file=./.dbx/deployment-result.json \
-          --subscription-name DTCA-DEV \
-          --resource-group astra-ddvdata-test-scu-rg \
-          --factory-name astra-ddvdata-test-scu-adf \
-          --name yz-test-pipeline
+          --subscription-name field-eng \
+          --resource-group oneenv \
+          --factory-name oneenv-adf \
+          --name pipeline3
 
       - name: Create Release
         id: create_release
