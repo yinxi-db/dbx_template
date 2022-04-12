@@ -44,7 +44,7 @@ jobs:
 #          dbx deploy --jobs=dbx-sample-sample
       - name: Deploy to ADF
         run: |
-          dbx deploy --write-specs-to-file=./.dbx/deployment-result.json --files-only
+          dbx deploy --deployment-file ./conf/deployment_single_task.yml --write-specs-to-file=./.dbx/deployment-result.json --files-only
 
       - name: Azure Login
         uses: azure/login@v1
