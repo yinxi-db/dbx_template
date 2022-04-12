@@ -16,8 +16,8 @@ jobs:
         python-version: [ 3.7 ]
 
     env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_PROD_HOST }}
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_PROD_SECRET }}
 
     steps:
       - uses: actions/checkout@v1
@@ -35,9 +35,25 @@ jobs:
         run: |
           pip install -r unit-requirements.txt
 
-      - name: Deploy the job
+      - name: set job api version to 2.1
         run: |
-          dbx deploy --jobs=dbx-sample-sample
+          export DATABRICKS_JOBS_API_VERSION=2.1
+
+#      - name: Deploy the job
+#        run: |
+#          dbx deploy --jobs=dbx-sample-sample
+      - name: Deploy to ADF
+        run: |
+          dbx deploy --write-specs-to-file=./.dbx/deployment-result.json --files-only
+
+      - name: Reflect to ADF
+        run: |
+          dbx datafactory reflect \
+          --specs-file=./.dbx/deployment-result.json \
+          --subscription-name field-eng \
+          --resource-group oneenv \
+          --factory-name oneenv-adf \
+          --name pipeline3
 
       - name: Create Release
         id: create_release

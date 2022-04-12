@@ -45,6 +45,13 @@ class TrainJob(Job):
 
         self.logger.info("Training job finished!")
 
+        if True: ## TODO - add performance validation condition here
+            MlflowClient().transition_model_version_stage(
+                name=mlflow_model_name,
+                version=current_version,
+                stage="Production"
+            )
+
 
 if __name__ == "__main__":
     job = TrainJob()

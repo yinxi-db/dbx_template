@@ -18,7 +18,7 @@ class MonitorJob(Job):
         data_path = self.conf["monitor"]["params"]["data_source"]
         row_count_deviation_threshold = self.conf["monitor"]["alerting_thresholds"]["row_count_deviation"]
 
-        df = self.spark.read.options(delimiter=";", header=True).csv(data_path)
+        df = self.spark.read.load(data_path)
         ## mean batch count
         mean_batch_count = df.groupby("score_date").count().select(avg("count")).first()[0]
         cur_batch_count = df.filter(col("score_date")==df.select(max("score_date")).first()[0]).count()

@@ -13,45 +13,34 @@ environments:
   default:
     strict_path_adjustment_policy: true
     jobs:
-      - name: "dbx-sample-transform"
-        <<:
-          - *basic-static-cluster
-        spark_python_task:
-          python_file: "file://dbx_sample/transformation/transformation.py"
-          parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
-      - name: "dbx-sample-train"
-        <<:
-          - *basic-static-cluster
-        spark_python_task:
-          python_file: "file://dbx_sample/train/train.py"
-          parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
-      - name: "dbx-sample-score"
-        <<:
-          - *basic-static-cluster
-        spark_python_task:
-          python_file: "file://dbx_sample/score/score.py"
-          parameters: [ "--conf-file", "file:fuse://conf/sample_config.yml" ]
-      - name: "dbx-sample-monitor"
-        <<:
-          - *basic-static-cluster
-        spark_python_task:
-          python_file: "file://dbx_sample/monitor/monitor.py"
-          parameters: [ "--conf-file", "file:fuse://conf/sample_config.yml" ]
-      - name: "dbx-sample-unit-test"
-        <<:
-          - *basic-static-cluster
-        spark_python_task:
-          python_file: "file://dbx_sample/jobs/sample/entrypoint.py"
-          parameters: ["--conf-file", "file:fuse://conf/test/sample.yml"]
-      - name: "dbx-sample-integration-test"
-        <<:
-          - *basic-static-cluster
-        spark_python_task:
-          python_file: "file://tests/integration/sample_test.py"
-          parameters: ["--conf-file", "file:fuse://conf/test/sample.yml"]
-      - name: "dbx-sample-config-test"
-        <<:
-          - *basic-static-cluster
-        spark_python_task:
-          python_file: "file://tests/integration/config_test.py"
-          parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
+      - name: "dbx-sample-multi-task-pipeline"
+        job_clusters:
+          - job_cluster_key: "basic-cluster"
+            <<: *basic-static-cluster
+        tasks:
+          - task_key: "transform"
+            job_cluster_key: "basic-cluster"
+            spark_python_task:
+              python_file: "file://dbx_sample/transformation/transformation.py"
+              parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
+          - task_key: "train"
+            job_cluster_key: "basic-cluster"
+            depends_on:
+              - task_key: "transform"
+            spark_python_task:
+              python_file: "file://dbx_sample/train/train.py"
+              parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
+          - task_key: "score"
+            job_cluster_key: "basic-cluster"
+            depends_on:
+              - task_key: "train"
+            spark_python_task:
+              python_file: "file://dbx_sample/score/score.py"
+              parameters: [ "--conf-file", "file:fuse://conf/sample_config.yml" ]
+          - task_key: "monitor"
+            job_cluster_key: "basic-cluster"
+            depends_on:
+              - task_key: "score"
+            spark_python_task:
+              python_file: "file://dbx_sample/monitor/monitor.py"
+              parameters: [ "--conf-file", "file:fuse://conf/sample_config.yml" ]

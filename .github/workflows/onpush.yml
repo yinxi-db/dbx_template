@@ -3,8 +3,8 @@ name: CI pipeline
 on:
   push:
     branches:
-      - '**'
-    tags-ignore:
+      - 'master' ## master is the collaboration branch that triggers tests
+    tags:
       - 'v*' # this tag type is used for release pipelines
 
 jobs:
@@ -55,19 +55,6 @@ jobs:
       - name: Run integration test
         run: |
           dbx launch --job=dbx-sample-config-test --as-run-submit --trace
-
-      - name: Deploy to ADF
-        run: |
-          dbx deploy --write-specs-to-file=./.dbx/deployment-result.json --files-only
-
-      - name: Reflect to ADF
-        run: |
-          dbx datafactory reflect \
-          --specs-file=./.dbx/deployment-result.json \
-          --subscription-name field-eng \
-          --resource-group oneenv \
-          --factory-name oneenv-adf \
-          --name pipeline3
 
 
 

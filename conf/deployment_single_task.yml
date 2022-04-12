@@ -1,0 +1,57 @@
+custom:
+  basic-cluster-props: &basic-cluster-props
+    spark_version: "10.4.x-cpu-ml-scala2.12"
+
+  basic-static-cluster: &basic-static-cluster
+    new_cluster:
+      <<: *basic-cluster-props
+      num_workers: 1
+      node_type_id: "i3.xlarge"
+
+# please note that we're using FUSE reference for config file, hence we're going to load this file using its local FS path
+environments:
+  default:
+    strict_path_adjustment_policy: true
+    jobs:
+      - name: "dbx-sample-transform"
+        <<:
+          - *basic-static-cluster
+        spark_python_task:
+          python_file: "file://dbx_sample/transformation/transformation.py"
+          parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
+      - name: "dbx-sample-train"
+        <<:
+          - *basic-static-cluster
+        spark_python_task:
+          python_file: "file://dbx_sample/train/train.py"
+          parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
+      - name: "dbx-sample-score"
+        <<:
+          - *basic-static-cluster
+        spark_python_task:
+          python_file: "file://dbx_sample/score/score.py"
+          parameters: [ "--conf-file", "file:fuse://conf/sample_config.yml" ]
+      - name: "dbx-sample-monitor"
+        <<:
+          - *basic-static-cluster
+        spark_python_task:
+          python_file: "file://dbx_sample/monitor/monitor.py"
+          parameters: [ "--conf-file", "file:fuse://conf/sample_config.yml" ]
+      - name: "dbx-sample-unit-test"
+        <<:
+          - *basic-static-cluster
+        spark_python_task:
+          python_file: "file://dbx_sample/jobs/sample/entrypoint.py"
+          parameters: ["--conf-file", "file:fuse://conf/test/sample.yml"]
+      - name: "dbx-sample-integration-test"
+        <<:
+          - *basic-static-cluster
+        spark_python_task:
+          python_file: "file://tests/integration/sample_test.py"
+          parameters: ["--conf-file", "file:fuse://conf/test/sample.yml"]
+      - name: "dbx-sample-config-test"
+        <<:
+          - *basic-static-cluster
+        spark_python_task:
+          python_file: "file://tests/integration/config_test.py"
+          parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
