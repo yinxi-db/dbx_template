@@ -7,6 +7,11 @@ custom:
       <<: *basic-cluster-props
       num_workers: 1
       node_type_id: "i3.xlarge"
+  basic-nonstatic-cluster: &basic-nonstatic-cluster
+    new_cluster:
+      <<: *basic-cluster-props
+      num_workers: 5
+      node_type_id: "i3.xlarge"
 
 # please note that we're using FUSE reference for config file, hence we're going to load this file using its local FS path
 environments:
@@ -17,6 +22,8 @@ environments:
         job_clusters:
           - job_cluster_key: "basic-cluster"
             <<: *basic-static-cluster
+          - job_cluster_key: "non-basic-cluster"
+            <<: *basic-nonstatic-cluster
         tasks:
           - task_key: "transform"
             job_cluster_key: "basic-cluster"
@@ -24,7 +31,7 @@ environments:
               python_file: "file://dbx_sample/transformation/transformation.py"
               parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
           - task_key: "train"
-            job_cluster_key: "basic-cluster"
+            job_cluster_key: "non-basic-cluster"
             depends_on:
               - task_key: "transform"
             spark_python_task:
@@ -44,6 +51,22 @@ environments:
             spark_python_task:
               python_file: "file://dbx_sample/monitor/monitor.py"
               parameters: [ "--conf-file", "file:fuse://conf/sample_config.yml" ]
+#        permissions:
+#          access_control_list:
+#            - user_name: "conor@databricks.com"
+#              permission_level: "CAN_VIEW"
+        access_control_list:
+          - user_name: "conor@databricks.com"
+            permission_level: "CAN_VIEW"
+        email_notifications:
+          on_start:
+            - "yinxi.zhang@databricks.com"
+          on_success: []
+          on_failure: []
+          no_alert_for_skipped_runs: false
+        schedule:
+          quartz_cron_expression: "16 30 * * * ?"
+          "timezone_id": "America/Chicago"
       - name: "dbx-sample-unit-test"
         <<:
           - *basic-static-cluster
@@ -62,3 +85,11 @@ environments:
         spark_python_task:
           python_file: "file://tests/integration/config_test.py"
           parameters: ["--conf-file", "file:fuse://conf/sample_config.yml"]
+        permissions:
+          access_control_list:
+            - user_name: "neal.hannan@databricks.com"
+              permission_level: "CAN_VIEW"
+            - user_name: "yinxi.zhang@databricks.com"
+              "permission_level": "IS_OWNER"
+            - group_name: "admins"
+              "permission_level": "CAN_MANAGE"

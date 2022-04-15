@@ -14,6 +14,8 @@ train:
   refresh_frequency:
   mlflow_tracking_experiment: "/Shared/winequality_sample_mlflow_exp"
   mlflow_registered_model_name: "winequality_sample_model"
+  model_validation:
+    r2: 0.1
   model_tags:
     version_tag:
       "minor_version_id": 1

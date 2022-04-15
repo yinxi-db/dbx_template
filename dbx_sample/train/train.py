@@ -21,6 +21,7 @@ class TrainJob(Job):
         mlflow_experiment = self.conf["train"]["mlflow_tracking_experiment"]
         mlflow_model_name = self.conf["train"]["mlflow_registered_model_name"]
         model_tags = self.conf["train"]["model_tags"]
+        r2_threshold = self.conf["train"]["model_validation"]["r2"]
 
         ## inspect existence of mlflow experiments
         if not mlflow_experiment in [x.name for x in mlflow.list_experiments()]:
@@ -43,15 +44,21 @@ class TrainJob(Job):
         for k, v in model_tags["model_tag"].items():
             MlflowClient().set_registered_model_tag(mlflow_model_name, k, v)
 
-        self.logger.info("Training job finished!")
+        r2 = mlflow.evaluate(model=f"models/{mlflow_model_name}/{current_version}",
+                             data = df.withColumn("quality_float", df.quality.cast("float")),
+                             targets="quality_float",
+                              model_type="regressor"
+        ).metrics["r2_score"]
 
-        if True: ## TODO - add performance validation condition here
+        if r2>r2_threshold:
             MlflowClient().transition_model_version_stage(
                 name=mlflow_model_name,
                 version=current_version,
-                stage="Production"
+                stage="Production",
+                archive_existing_versions = False
             )
 
+        self.logger.info("Training job finished!")
 
 if __name__ == "__main__":
     job = TrainJob()
