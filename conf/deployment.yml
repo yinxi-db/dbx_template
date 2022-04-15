@@ -51,13 +51,14 @@ environments:
             spark_python_task:
               python_file: "file://dbx_sample/monitor/monitor.py"
               parameters: [ "--conf-file", "file:fuse://conf/sample_config.yml" ]
-#        permissions:
-#          access_control_list:
-#            - user_name: "conor@databricks.com"
-#              permission_level: "CAN_VIEW"
-        access_control_list:
-          - user_name: "conor@databricks.com"
-            permission_level: "CAN_VIEW"
+        permissions:
+          access_control_list: ## acl list needs to be exhaustive
+            - user_name: "neal.hannan@databricks.com"
+              permission_level: "CAN_VIEW"
+            - user_name: "yinxi.zhang@databricks.com"
+              "permission_level": "IS_OWNER"
+            - group_name: "admins"
+              "permission_level": "CAN_MANAGE"
         email_notifications:
           on_start:
             - "yinxi.zhang@databricks.com"
