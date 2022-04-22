@@ -1,0 +1,72 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "oneenv-adf"
+		},
+		"AzureDatabricks_LS_accessToken": {
+			"value": ""
+		},
+		"Demo Azure Databricks_accessToken": {
+			"value": ""
+		},
+		"LinkedCluster_accessToken": {
+			"value": ""
+		},
+		"Oneenv Azure Databricks_accessToken": {
+			"value": ""
+		},
+		"SQLMaintenanceDemo_connectionString": {
+			"value": ""
+		},
+		"dbx-sample-config-test-ls_accessToken": {
+			"value": ""
+		},
+		"dbx-sample-integration-test-ls_accessToken": {
+			"value": ""
+		},
+		"dbx-sample-monitor-ls_accessToken": {
+			"value": ""
+		},
+		"dbx-sample-multi-task-pipeline-ls_accessToken": {
+			"value": ""
+		},
+		"dbx-sample-score-ls_accessToken": {
+			"value": ""
+		},
+		"dbx-sample-train-ls_accessToken": {
+			"value": ""
+		},
+		"dbx-sample-transform-ls_accessToken": {
+			"value": ""
+		},
+		"dbx-sample-unit-test-ls_accessToken": {
+			"value": ""
+		},
+		"field eng east kpPool_accessToken": {
+			"value": ""
+		},
+		"itrusov_func_functionKey": {
+			"value": ""
+		},
+		"new-sample-integration-test-ls_accessToken": {
+			"value": ""
+		},
+		"new-sample-ls_accessToken": {
+			"value": ""
+		},
+		"ADLSLandingZone_properties_typeProperties_url": {
+			"value": "https://maintlandingzone.dfs.core.windows.net"
+		},
+		"itrusov_func_properties_typeProperties_functionAppUrl": {
+			"value": "https://itrusov-func.azurewebsites.net"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

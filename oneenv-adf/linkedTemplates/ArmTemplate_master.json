@@ -1,0 +1,195 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "oneenv-adf"
+		},
+		"AzureDatabricks_LS_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks_LS'"
+		},
+		"Demo Azure Databricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'Demo Azure Databricks'"
+		},
+		"LinkedCluster_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'LinkedCluster'"
+		},
+		"Oneenv Azure Databricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'Oneenv Azure Databricks'"
+		},
+		"SQLMaintenanceDemo_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SQLMaintenanceDemo'"
+		},
+		"dbx-sample-config-test-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-config-test-ls'"
+		},
+		"dbx-sample-integration-test-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-integration-test-ls'"
+		},
+		"dbx-sample-monitor-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-monitor-ls'"
+		},
+		"dbx-sample-multi-task-pipeline-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-multi-task-pipeline-ls'"
+		},
+		"dbx-sample-score-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-score-ls'"
+		},
+		"dbx-sample-train-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-train-ls'"
+		},
+		"dbx-sample-transform-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-transform-ls'"
+		},
+		"dbx-sample-unit-test-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-unit-test-ls'"
+		},
+		"field eng east kpPool_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'field eng east kpPool'"
+		},
+		"itrusov_func_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'itrusov_func'"
+		},
+		"new-sample-integration-test-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'new-sample-integration-test-ls'"
+		},
+		"new-sample-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'new-sample-ls'"
+		},
+		"ADLSLandingZone_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://maintlandingzone.dfs.core.windows.net"
+		},
+		"itrusov_func_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://itrusov-func.azurewebsites.net"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "oneenv-adf_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureDatabricks_LS_accessToken": {
+						"value": "[parameters('AzureDatabricks_LS_accessToken')]"
+					},
+					"Demo Azure Databricks_accessToken": {
+						"value": "[parameters('Demo Azure Databricks_accessToken')]"
+					},
+					"LinkedCluster_accessToken": {
+						"value": "[parameters('LinkedCluster_accessToken')]"
+					},
+					"Oneenv Azure Databricks_accessToken": {
+						"value": "[parameters('Oneenv Azure Databricks_accessToken')]"
+					},
+					"SQLMaintenanceDemo_connectionString": {
+						"value": "[parameters('SQLMaintenanceDemo_connectionString')]"
+					},
+					"dbx-sample-config-test-ls_accessToken": {
+						"value": "[parameters('dbx-sample-config-test-ls_accessToken')]"
+					},
+					"dbx-sample-integration-test-ls_accessToken": {
+						"value": "[parameters('dbx-sample-integration-test-ls_accessToken')]"
+					},
+					"dbx-sample-monitor-ls_accessToken": {
+						"value": "[parameters('dbx-sample-monitor-ls_accessToken')]"
+					},
+					"dbx-sample-multi-task-pipeline-ls_accessToken": {
+						"value": "[parameters('dbx-sample-multi-task-pipeline-ls_accessToken')]"
+					},
+					"dbx-sample-score-ls_accessToken": {
+						"value": "[parameters('dbx-sample-score-ls_accessToken')]"
+					},
+					"dbx-sample-train-ls_accessToken": {
+						"value": "[parameters('dbx-sample-train-ls_accessToken')]"
+					},
+					"dbx-sample-transform-ls_accessToken": {
+						"value": "[parameters('dbx-sample-transform-ls_accessToken')]"
+					},
+					"dbx-sample-unit-test-ls_accessToken": {
+						"value": "[parameters('dbx-sample-unit-test-ls_accessToken')]"
+					},
+					"field eng east kpPool_accessToken": {
+						"value": "[parameters('field eng east kpPool_accessToken')]"
+					},
+					"itrusov_func_functionKey": {
+						"value": "[parameters('itrusov_func_functionKey')]"
+					},
+					"new-sample-integration-test-ls_accessToken": {
+						"value": "[parameters('new-sample-integration-test-ls_accessToken')]"
+					},
+					"new-sample-ls_accessToken": {
+						"value": "[parameters('new-sample-ls_accessToken')]"
+					},
+					"ADLSLandingZone_properties_typeProperties_url": {
+						"value": "[parameters('ADLSLandingZone_properties_typeProperties_url')]"
+					},
+					"itrusov_func_properties_typeProperties_functionAppUrl": {
+						"value": "[parameters('itrusov_func_properties_typeProperties_functionAppUrl')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "oneenv-adf_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'oneenv-adf_ArmTemplate_0')]"
+			]
+		}
+	]
+}

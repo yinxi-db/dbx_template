@@ -1,0 +1,1845 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "oneenv-adf"
+		},
+		"AzureDatabricks_LS_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks_LS'"
+		},
+		"Demo Azure Databricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'Demo Azure Databricks'"
+		},
+		"LinkedCluster_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'LinkedCluster'"
+		},
+		"Oneenv Azure Databricks_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'Oneenv Azure Databricks'"
+		},
+		"SQLMaintenanceDemo_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SQLMaintenanceDemo'"
+		},
+		"dbx-sample-config-test-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-config-test-ls'"
+		},
+		"dbx-sample-integration-test-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-integration-test-ls'"
+		},
+		"dbx-sample-monitor-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-monitor-ls'"
+		},
+		"dbx-sample-multi-task-pipeline-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-multi-task-pipeline-ls'"
+		},
+		"dbx-sample-score-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-score-ls'"
+		},
+		"dbx-sample-train-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-train-ls'"
+		},
+		"dbx-sample-transform-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-transform-ls'"
+		},
+		"dbx-sample-unit-test-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'dbx-sample-unit-test-ls'"
+		},
+		"field eng east kpPool_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'field eng east kpPool'"
+		},
+		"itrusov_func_functionKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'functionKey' of 'itrusov_func'"
+		},
+		"new-sample-integration-test-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'new-sample-integration-test-ls'"
+		},
+		"new-sample-ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'new-sample-ls'"
+		},
+		"ADLSLandingZone_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://maintlandingzone.dfs.core.windows.net"
+		},
+		"itrusov_func_properties_typeProperties_functionAppUrl": {
+			"type": "string",
+			"defaultValue": "https://itrusov-func.azurewebsites.net"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/fleetmaintenance-copy-demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_maintenance_header to landing",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT * FROM [dbo].[maintenance_header]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_sql_fleetmaintenance",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_parquet_maintenanceheader",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": "fleetmaintenance/maintenanceheader",
+									"FileName": {
+										"value": "@concat('maintenanceheader_', guid(), '.parquet' )",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "copy_power_output to landing",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT * FROM [dbo].[power_output] ",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_sql_fleetmaintenance",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_parquet_maintenanceheader",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": "fleetmaintenance/poweroutput",
+									"FileName": {
+										"value": "@concat('poweroutput_', guid(), '.parquet' )",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "iotdemo"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-04-15T20:09:29Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sql_fleetmaintenance')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_parquet_maintenanceheader')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/fleetmaintenance-copy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_maintenance_header to landing",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT * FROM [dbo].[maintenance_header]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_sql_fleetmaintenance",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_parquet_maintenanceheader",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": "fleetmaintenance/maintenanceheader",
+									"FileName": {
+										"value": "@concat('maintenanceheader_', guid(), '.parquet' )",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "copy_power_output to landing",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "SELECT * FROM [dbo].[power_output] ",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_sql_fleetmaintenance",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_parquet_maintenanceheader",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": "fleetmaintenance/poweroutput",
+									"FileName": {
+										"value": "@concat('poweroutput_', guid(), '.parquet' )",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "execute batch delta load",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "copy_maintenance_header to landing",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "copy_power_output to landing",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Azure Integration Demo/IoT-Demo/part1-batch-data-factory-data-lake-to-delta"
+						},
+						"linkedServiceName": {
+							"referenceName": "Oneenv Azure Databricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "iotdemo"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-04-15T20:08:46Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sql_fleetmaintenance')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_parquet_maintenanceheader')]",
+				"[concat(variables('factoryId'), '/linkedServices/Oneenv Azure Databricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/fleetmaintenance-copy_copy1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "execute batch delta load",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/leo.furlong@databricks.com/Streaming Demo/ADF to Auto Loader"
+						},
+						"linkedServiceName": {
+							"referenceName": "Oneenv Azure Databricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "iotdemo"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-21T21:38:39Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Oneenv Azure Databricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/fleetmaintenance-copy_detailed')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_maintenance_header",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get maintenance_header_ETLTimestamp",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat('SELECT * FROM [dbo].[maintenance_header] WHERE date >=''', activity('Get maintenance_header_ETLTimestamp').output.firstRow.LastETLRunTime, '''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_sql_fleetmaintenance",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_parquet_maintenanceheader",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": "fleetmaintenance/maintenanceheader",
+									"FileName": {
+										"value": "@concat('maintenanceheader_', guid(), '.parquet' )",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "copy_power_output",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Get power_output_ETLTimestamp",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "@concat('SELECT * FROM [dbo].[power_output] WHERE date >=''', activity('Get power_output_ETLTimestamp').output.firstRow.LastETLRunTime, '''')",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_sql_fleetmaintenance",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_adls_parquet_maintenanceheader",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": "fleetmaintenance/poweroutput",
+									"FileName": {
+										"value": "@concat('poweroutput_', guid(), '.parquet' )",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "execute batch delta load",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "Set maintenance_header_ETLTimestamp",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set power_output_ETLTimestamp",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/william.braccialli@databricks.com/IoT-Demo/part1-batch-data-factory-data-lake-to-delta"
+						},
+						"linkedServiceName": {
+							"referenceName": "Oneenv Azure Databricks",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Set maintenance_header_ETLTimestamp",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_maintenance_header",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[uspSetETLTimestamp]",
+							"storedProcedureParameters": {
+								"TableName": {
+									"value": "maintenance_header",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLMaintenanceDemo",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Get maintenance_header_ETLTimestamp",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[uspGetETLTimestamp]",
+								"storedProcedureParameters": {
+									"TableName": {
+										"type": "String",
+										"value": "maintenance_header"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_sql_fleetmaintenance",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Get power_output_ETLTimestamp",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[uspGetETLTimestamp]",
+								"storedProcedureParameters": {
+									"TableName": {
+										"type": "String",
+										"value": "power_output"
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "ds_sql_fleetmaintenance",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Set power_output_ETLTimestamp",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "copy_power_output",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[uspSetETLTimestamp]",
+							"storedProcedureParameters": {
+								"TableName": {
+									"value": "power_output",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "SQLMaintenanceDemo",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "iotdemo"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-04-13T19:10:46Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sql_fleetmaintenance')]",
+				"[concat(variables('factoryId'), '/datasets/ds_adls_parquet_maintenanceheader')]",
+				"[concat(variables('factoryId'), '/linkedServices/Oneenv Azure Databricks')]",
+				"[concat(variables('factoryId'), '/linkedServices/SQLMaintenanceDemo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/itrusov-demo')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "SampleJob",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/databricks/mlflow/1607894647703021/b4e3b9e6962c4efc884b20bbaa9a3928/artifacts/itrusov_dev_demo/jobs/sample/entrypoint.py",
+							"parameters": [
+								"--conf-file",
+								"dbfs:/databricks/mlflow/1607894647703021/b4e3b9e6962c4efc884b20bbaa9a3928/artifacts/conf/test/sample.json"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/databricks/mlflow/1607894647703021/b4e3b9e6962c4efc884b20bbaa9a3928/artifacts/dist/itrusov_dev_demo-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "LinkedCluster",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "itrusov-demo"
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-10-29T14:54:57Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LinkedCluster')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/itrusov-demo_copy1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "SampleJob",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/databricks/mlflow/1607894647703021/b4e3b9e6962c4efc884b20bbaa9a3928/artifacts/itrusov_dev_demo/jobs/sample/entrypoint.py",
+							"parameters": [
+								"--conf-file",
+								"dbfs:/databricks/mlflow/1607894647703021/b4e3b9e6962c4efc884b20bbaa9a3928/artifacts/conf/test/sample.json"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/databricks/mlflow/1607894647703021/b4e3b9e6962c4efc884b20bbaa9a3928/artifacts/dist/itrusov_dev_demo-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "field eng east kpPool",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "itrusov-demo"
+				},
+				"annotations": [],
+				"lastPublishTime": "2020-10-29T14:54:57Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/field eng east kpPool')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "pm_test",
+						"description": "test",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "https://adb-2541733722036151.11.azuredatabricks.net/?o=2541733722036151#notebook/3769118439491357/command/3769118439491358"
+						},
+						"linkedServiceName": {
+							"referenceName": "Oneenv Azure Databricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-11-18T09:28:29Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Oneenv Azure Databricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "test",
+				"activities": [
+					{
+						"name": "Notebook1",
+						"description": "test",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/piotr.majer@databricks.com/test_pm"
+						},
+						"linkedServiceName": {
+							"referenceName": "Oneenv Azure Databricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-11-18T10:01:40Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Oneenv Azure Databricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dbx-sample-transform",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dbx_sample/transformation/transformation.py",
+							"parameters": [
+								"--conf-file",
+								"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/sample_config.yml"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "dbx-sample-transform-ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "dbx-sample-integration-test",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/tests/integration/sample_test.py",
+							"parameters": [
+								"--conf-file",
+								"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/test/sample.yml"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "dbx-sample-integration-test-ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "dbx-sample-score",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dbx_sample/score/score.py",
+							"parameters": [
+								"--conf-file",
+								"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/sample_config.yml"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "dbx-sample-score-ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "dbx-sample-train",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dbx_sample/train/train.py",
+							"parameters": [
+								"--conf-file",
+								"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/sample_config.yml"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "dbx-sample-train-ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "dbx-sample-unit-test",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dbx_sample/jobs/sample/entrypoint.py",
+							"parameters": [
+								"--conf-file",
+								"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/test/sample.yml"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "dbx-sample-unit-test-ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "dbx-sample-config-test",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/tests/integration/config_test.py",
+							"parameters": [
+								"--conf-file",
+								"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/sample_config.yml"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "dbx-sample-config-test-ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "dbx-sample-monitor",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dbx_sample/monitor/monitor.py",
+							"parameters": [
+								"--conf-file",
+								"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/sample_config.yml"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "dbx-sample-monitor-ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "new-sample-integration-test",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/tests/integration/sample_test.py",
+							"parameters": [
+								"--conf-file",
+								"/dbfs/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/conf/test/sample.yml"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/dist/new-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "new-sample-integration-test-ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "new-sample",
+						"type": "DatabricksSparkPython",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pythonFile": "dbfs:/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/new/jobs/sample/entrypoint.py",
+							"parameters": [
+								"--conf-file",
+								"/dbfs/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/conf/test/sample.yml"
+							],
+							"libraries": [
+								{
+									"whl": "dbfs:/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/dist/new-0.0.1-py3-none-any.whl"
+								}
+							]
+						},
+						"linkedServiceName": {
+							"referenceName": "new-sample-ls",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Notebook1",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Quickstart Notebook"
+						},
+						"linkedServiceName": {
+							"referenceName": "Demo Azure Databricks",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "[[1,2,3]",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Notebook2",
+									"type": "DatabricksNotebook",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Quickstart Notebook"
+									},
+									"linkedServiceName": {
+										"referenceName": "Demo Azure Databricks",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "yz-adf"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-04-12T19:51:12Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dbx-sample-transform-ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/dbx-sample-integration-test-ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/dbx-sample-score-ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/dbx-sample-train-ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/dbx-sample-unit-test-ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/dbx-sample-config-test-ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/dbx-sample-monitor-ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/new-sample-integration-test-ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/new-sample-ls')]",
+				"[concat(variables('factoryId'), '/linkedServices/Demo Azure Databricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "test",
+				"activities": [
+					{
+						"name": "pm_test",
+						"description": "test 101",
+						"type": "DatabricksNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/piotr.majer@databricks.com/test_pm"
+						},
+						"linkedServiceName": {
+							"referenceName": "Oneenv Azure Databricks",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-11-18T09:54:29Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Oneenv Azure Databricks')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_adls_parquet_maintenanceheader')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLSLandingZone",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Directory": {
+						"type": "string"
+					},
+					"FileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().FileName",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().Directory",
+							"type": "Expression"
+						},
+						"fileSystem": "landing"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLSLandingZone')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_sql_fleetmaintenance')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SQLMaintenanceDemo",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "device",
+						"type": "nvarchar"
+					},
+					{
+						"name": "date",
+						"type": "date"
+					},
+					{
+						"name": "maintance",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "maintenanceheader"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SQLMaintenanceDemo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ADLSLandingZone')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ADLSLandingZone_properties_typeProperties_url')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-984752964297111.11.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricks_LS_accessToken')]"
+					},
+					"newClusterNodeType": "Standard_D3_v2",
+					"newClusterNumOfWorker": "2",
+					"newClusterVersion": "10.1.x-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed",
+					"policyId": "D96178CF3A0001ED"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Demo Azure Databricks')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://eastus2.azuredatabricks.net/?o=5206439413157315",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('Demo Azure Databricks_accessToken')]"
+					},
+					"existingClusterId": "0812-164905-tear862"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LinkedCluster')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://eastus2.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('LinkedCluster_accessToken')]"
+					},
+					"newClusterNodeType": "Standard_F4s",
+					"newClusterNumOfWorker": "1",
+					"newClusterSparkEnvVars": {
+						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+					},
+					"newClusterVersion": "7.2.x-cpu-ml-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Oneenv Azure Databricks')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-984752964297111.11.azuredatabricks.net/?o=984752964297111#",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('Oneenv Azure Databricks_accessToken')]"
+					},
+					"instancePoolId": "1201-134211-jabs516-pool-ac43kjfj",
+					"newClusterNumOfWorker": "1",
+					"newClusterSparkEnvVars": {
+						"PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+					},
+					"newClusterVersion": "10.3.x-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQLMaintenanceDemo')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('SQLMaintenanceDemo_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dbx-sample-config-test-ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://curriculum.cloud.databricks.com",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('dbx-sample-config-test-ls_accessToken')]"
+					},
+					"newClusterNodeType": "i3.xlarge",
+					"newClusterNumOfWorker": 1,
+					"newClusterVersion": "10.4.x-cpu-ml-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dbx-sample-integration-test-ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://curriculum.cloud.databricks.com",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('dbx-sample-integration-test-ls_accessToken')]"
+					},
+					"newClusterNodeType": "i3.xlarge",
+					"newClusterNumOfWorker": 1,
+					"newClusterVersion": "10.4.x-cpu-ml-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dbx-sample-monitor-ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://curriculum.cloud.databricks.com",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('dbx-sample-monitor-ls_accessToken')]"
+					},
+					"newClusterNodeType": "i3.xlarge",
+					"newClusterNumOfWorker": 1,
+					"newClusterVersion": "10.4.x-cpu-ml-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dbx-sample-multi-task-pipeline-ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://db-sme-demo-ml-practice.cloud.databricks.com",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('dbx-sample-multi-task-pipeline-ls_accessToken')]"
+					},
+					"newClusterNumOfWorker": "1",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dbx-sample-score-ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://curriculum.cloud.databricks.com",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('dbx-sample-score-ls_accessToken')]"
+					},
+					"newClusterNodeType": "i3.xlarge",
+					"newClusterNumOfWorker": 1,
+					"newClusterVersion": "10.4.x-cpu-ml-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dbx-sample-train-ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://curriculum.cloud.databricks.com",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('dbx-sample-train-ls_accessToken')]"
+					},
+					"newClusterNodeType": "i3.xlarge",
+					"newClusterNumOfWorker": 1,
+					"newClusterVersion": "10.4.x-cpu-ml-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dbx-sample-transform-ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://curriculum.cloud.databricks.com",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('dbx-sample-transform-ls_accessToken')]"
+					},
+					"newClusterNodeType": "i3.xlarge",
+					"newClusterNumOfWorker": 1,
+					"newClusterVersion": "10.4.x-cpu-ml-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dbx-sample-unit-test-ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://curriculum.cloud.databricks.com",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('dbx-sample-unit-test-ls_accessToken')]"
+					},
+					"newClusterNodeType": "i3.xlarge",
+					"newClusterNumOfWorker": 1,
+					"newClusterVersion": "10.4.x-cpu-ml-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/field eng east kpPool')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-984752964297111.11.azuredatabricks.net",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('field eng east kpPool_accessToken')]"
+					},
+					"existingClusterId": "0506-175016-photo39"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/itrusov_func')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureFunction",
+				"typeProperties": {
+					"functionAppUrl": "[parameters('itrusov_func_properties_typeProperties_functionAppUrl')]",
+					"functionKey": {
+						"type": "SecureString",
+						"value": "[parameters('itrusov_func_functionKey')]"
+					},
+					"authentication": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/new-sample-integration-test-ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://db-sme-demo-ml-practice.cloud.databricks.com",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('new-sample-integration-test-ls_accessToken')]"
+					},
+					"newClusterNodeType": "i3.xlarge",
+					"newClusterNumOfWorker": 1,
+					"newClusterVersion": "9.1.x-cpu-ml-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/new-sample-ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://db-sme-demo-ml-practice.cloud.databricks.com",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('new-sample-ls_accessToken')]"
+					},
+					"newClusterNodeType": "i3.xlarge",
+					"newClusterNumOfWorker": 1,
+					"newClusterVersion": "9.1.x-cpu-ml-scala2.12",
+					"newClusterInitScripts": [],
+					"clusterOption": "Fixed"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipeline3",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2022-03-31T19:02:00",
+						"timeZone": "Central Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipeline3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_fleetmaintenance",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_sql_fleetmaintenance",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\tdevice as string,\n\t\tdate as date,\n\t\tmaintance as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tdevice as string,\n\t\tdate as date,\n\t\tmaintance as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_sql_fleetmaintenance')]"
+			]
+		}
+	]
+}
