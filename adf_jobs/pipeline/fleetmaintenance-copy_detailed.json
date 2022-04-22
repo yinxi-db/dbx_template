@@ -1,0 +1,310 @@
+{
+	"name": "fleetmaintenance-copy_detailed",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy_maintenance_header",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Get maintenance_header_ETLTimestamp",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@concat('SELECT * FROM [dbo].[maintenance_header] WHERE date >=''', activity('Get maintenance_header_ETLTimestamp').output.firstRow.LastETLRunTime, '''')",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_sql_fleetmaintenance",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_adls_parquet_maintenanceheader",
+						"type": "DatasetReference",
+						"parameters": {
+							"Directory": "fleetmaintenance/maintenanceheader",
+							"FileName": {
+								"value": "@concat('maintenanceheader_', guid(), '.parquet' )",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "copy_power_output",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Get power_output_ETLTimestamp",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "@concat('SELECT * FROM [dbo].[power_output] WHERE date >=''', activity('Get power_output_ETLTimestamp').output.firstRow.LastETLRunTime, '''')",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_sql_fleetmaintenance",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_adls_parquet_maintenanceheader",
+						"type": "DatasetReference",
+						"parameters": {
+							"Directory": "fleetmaintenance/poweroutput",
+							"FileName": {
+								"value": "@concat('poweroutput_', guid(), '.parquet' )",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "execute batch delta load",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Set maintenance_header_ETLTimestamp",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set power_output_ETLTimestamp",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/william.braccialli@databricks.com/IoT-Demo/part1-batch-data-factory-data-lake-to-delta"
+				},
+				"linkedServiceName": {
+					"referenceName": "Oneenv Azure Databricks",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Set maintenance_header_ETLTimestamp",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_maintenance_header",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[uspSetETLTimestamp]",
+					"storedProcedureParameters": {
+						"TableName": {
+							"value": "maintenance_header",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SQLMaintenanceDemo",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Get maintenance_header_ETLTimestamp",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[uspGetETLTimestamp]",
+						"storedProcedureParameters": {
+							"TableName": {
+								"type": "String",
+								"value": "maintenance_header"
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_sql_fleetmaintenance",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Get power_output_ETLTimestamp",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[uspGetETLTimestamp]",
+						"storedProcedureParameters": {
+							"TableName": {
+								"type": "String",
+								"value": "power_output"
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_sql_fleetmaintenance",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Set power_output_ETLTimestamp",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "copy_power_output",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[uspSetETLTimestamp]",
+					"storedProcedureParameters": {
+						"TableName": {
+							"value": "power_output",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "SQLMaintenanceDemo",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "iotdemo"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-04-13T19:10:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

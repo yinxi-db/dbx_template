@@ -1,0 +1,328 @@
+{
+	"name": "pipeline3",
+	"properties": {
+		"activities": [
+			{
+				"name": "dbx-sample-transform",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dbx_sample/transformation/transformation.py",
+					"parameters": [
+						"--conf-file",
+						"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/sample_config.yml"
+					],
+					"libraries": [
+						{
+							"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "dbx-sample-transform-ls",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "dbx-sample-integration-test",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/tests/integration/sample_test.py",
+					"parameters": [
+						"--conf-file",
+						"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/test/sample.yml"
+					],
+					"libraries": [
+						{
+							"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "dbx-sample-integration-test-ls",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "dbx-sample-score",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dbx_sample/score/score.py",
+					"parameters": [
+						"--conf-file",
+						"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/sample_config.yml"
+					],
+					"libraries": [
+						{
+							"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "dbx-sample-score-ls",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "dbx-sample-train",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dbx_sample/train/train.py",
+					"parameters": [
+						"--conf-file",
+						"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/sample_config.yml"
+					],
+					"libraries": [
+						{
+							"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "dbx-sample-train-ls",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "dbx-sample-unit-test",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dbx_sample/jobs/sample/entrypoint.py",
+					"parameters": [
+						"--conf-file",
+						"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/test/sample.yml"
+					],
+					"libraries": [
+						{
+							"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "dbx-sample-unit-test-ls",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "dbx-sample-config-test",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/tests/integration/config_test.py",
+					"parameters": [
+						"--conf-file",
+						"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/sample_config.yml"
+					],
+					"libraries": [
+						{
+							"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "dbx-sample-config-test-ls",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "dbx-sample-monitor",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dbx_sample/monitor/monitor.py",
+					"parameters": [
+						"--conf-file",
+						"/dbfs/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/conf/sample_config.yml"
+					],
+					"libraries": [
+						{
+							"whl": "dbfs:/Shared/dbx/projects/dbx_sample/f1180fb140ce4fde9881343c1de58620/artifacts/dist/dbx_sample-0.0.1-py3-none-any.whl"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "dbx-sample-monitor-ls",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "new-sample-integration-test",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/tests/integration/sample_test.py",
+					"parameters": [
+						"--conf-file",
+						"/dbfs/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/conf/test/sample.yml"
+					],
+					"libraries": [
+						{
+							"whl": "dbfs:/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/dist/new-0.0.1-py3-none-any.whl"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "new-sample-integration-test-ls",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "new-sample",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/new/jobs/sample/entrypoint.py",
+					"parameters": [
+						"--conf-file",
+						"/dbfs/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/conf/test/sample.yml"
+					],
+					"libraries": [
+						{
+							"whl": "dbfs:/dbx/new/1729af97dd134c6f94cdac94e4319dd5/artifacts/dist/new-0.0.1-py3-none-any.whl"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "new-sample-ls",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Notebook1",
+				"type": "DatabricksNotebook",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Quickstart Notebook"
+				},
+				"linkedServiceName": {
+					"referenceName": "Demo Azure Databricks",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "[1,2,3]",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Notebook2",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Quickstart Notebook"
+							},
+							"linkedServiceName": {
+								"referenceName": "Demo Azure Databricks",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "yz-adf"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-04-12T19:51:12Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

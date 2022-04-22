@@ -1,0 +1,13 @@
+{
+	"name": "Demo Azure Databricks",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://eastus2.azuredatabricks.net/?o=5206439413157315",
+			"existingClusterId": "0812-164905-tear862",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDY3NzZGMkNDLTAxOEYtNDhBQS04RjY0LUI4NDg0MDcxMjBGRl8xZjIwOTI1NC0wMGQ1LTRhNzEtYTQ5Mi1jODc0NGZhZDRiOGEiDQp9"
+		}
+	}
+}

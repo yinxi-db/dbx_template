@@ -1,0 +1,11 @@
+{
+	"name": "ADLSLandingZone",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://maintlandingzone.dfs.core.windows.net"
+		}
+	}
+}

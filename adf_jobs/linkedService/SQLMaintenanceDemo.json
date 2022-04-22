@@ -1,0 +1,12 @@
+{
+	"name": "SQLMaintenanceDemo",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "integrated security=False;encrypt=True;connection timeout=30;data source=turbinemaintenance.database.windows.net;initial catalog=fleetmaintenance;user id=sqladmin",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDY3NzZGMkNDLTAxOEYtNDhBQS04RjY0LUI4NDg0MDcxMjBGRl80ZDlmNDFjOS1iZmNmLTRkMDYtYmI1NS1jNzNhZWQxMzc2ODEiDQp9"
+		}
+	}
+}

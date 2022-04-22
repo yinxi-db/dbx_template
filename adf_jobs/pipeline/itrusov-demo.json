@@ -1,0 +1,42 @@
+{
+	"name": "itrusov-demo",
+	"properties": {
+		"activities": [
+			{
+				"name": "SampleJob",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "dbfs:/databricks/mlflow/1607894647703021/b4e3b9e6962c4efc884b20bbaa9a3928/artifacts/itrusov_dev_demo/jobs/sample/entrypoint.py",
+					"parameters": [
+						"--conf-file",
+						"dbfs:/databricks/mlflow/1607894647703021/b4e3b9e6962c4efc884b20bbaa9a3928/artifacts/conf/test/sample.json"
+					],
+					"libraries": [
+						{
+							"whl": "dbfs:/databricks/mlflow/1607894647703021/b4e3b9e6962c4efc884b20bbaa9a3928/artifacts/dist/itrusov_dev_demo-0.0.1-py3-none-any.whl"
+						}
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "LinkedCluster",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "itrusov-demo"
+		},
+		"annotations": [],
+		"lastPublishTime": "2020-10-29T14:54:57Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
